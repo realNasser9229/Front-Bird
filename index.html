@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Front Bird</title>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #800020;
+    color: #FFD700;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+  }
+  header {
+    width: 100%;
+    background: #800020 url('https://i.ibb.co/WvdHgn4g/banner.png') no-repeat center/cover;
+    text-align: center;
+    padding: 60px 20px;
+    box-sizing: border-box;
+  }
+  header img {
+    width: 120px;
+    margin-top: 20px;
+  }
+  h1 { margin: 0; font-size: 3rem; text-shadow: 2px 2px #550010; }
+  #dropZone {
+    width: 90%;
+    max-width: 500px;
+    height: 180px;
+    border: 3px dashed #FFD700;
+    border-radius: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 30px 0;
+    text-align: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background 0.3s;
+    padding: 20px;
+  }
+  #dropZone.hover { background-color: rgba(255, 215, 0, 0.2); }
+  #fileList { width: 90%; max-width: 500px; }
+  .fileItem {
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(255, 215, 0, 0.1); padding: 10px; margin-bottom: 8px; border-radius: 8px;
+  }
+  .fileItem button {
+    background: #FFD700; border: none; color: #800020; padding: 5px 10px; border-radius: 5px; cursor: pointer;
+  }
+  .fileItem button:hover { background: #fff176; }
+  footer { margin-top: auto; padding: 20px; font-size: 0.9rem; color: #ffd700aa; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Front Bird</h1>
+  <img src="https://i.ibb.co/YBHn0XrQ/logo.png" alt="Front Bird Logo">
+</header>
+
+<div id="dropZone">Drag & drop your files here or click to select</div>
+<div id="fileList"></div>
+
+<footer>Front Bird &copy; 2026 — Multi-tier browser file manager</footer>
+
+<script>
+// ------------------- Multi-tier storage -------------------
+const dbName = "FrontBirdDB";
+const storeName = "files";
+let db;
+const inMemoryFiles = {}; // session-only files
+
+// IndexedDB init
+const request = indexedDB.open(dbName, 1);
+request.onupgradeneeded = (e) => {
+  db = e.target.result;
+  db.createObjectStore(storeName, { keyPath: "name" });
+};
+request.onsuccess = (e) => {
+  db = e.target.result;
+  loadFiles();
+};
+request.onerror = (e) => console.error("DB error:", e.target.errorCode);
+
+// ------------------- Drag & Drop -------------------
+const dropZone = document.getElementById('dropZone');
+dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('hover'); });
+dropZone.addEventListener('dragleave', () => dropZone.classList.remove('hover'));
+dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('hover'); handleFiles(e.dataTransfer.files); });
+dropZone.addEventListener('click', () => {
+  const input = document.createElement('input');
+  input.type = 'file'; input.multiple = true;
+  input.onchange = () => handleFiles(input.files);
+  input.click();
+});
+
+// ------------------- File Handling -------------------
+function handleFiles(files) {
+  for (let file of files) {
+    if (file.size <= 5*1024*1024) { // <5MB -> localStorage
+      storeLocalStorage(file);
+    } else if (file.size <= 50*1024*1024) { // 5-50MB -> IndexedDB
+      storeIndexedDB(file);
+    } else { // >50MB -> in-memory session
+      storeInMemory(file);
+    }
+  }
+  loadFiles();
+}
+
+// ------------------- LocalStorage -------------------
+function storeLocalStorage(file) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      localStorage.setItem(`fb_${file.name}`, reader.result);
+    } catch(e) { alert("LocalStorage full or file too big for localStorage!"); }
+    loadFiles();
+  };
+  reader.readAsDataURL(file);
+}
+
+// ------------------- IndexedDB -------------------
+function storeIndexedDB(file) {
+  const tx = db.transaction(storeName, "readwrite");
+  const store = tx.objectStore(storeName);
+  const request = store.put({ name: file.name, blob: file });
+  request.onsuccess = () => loadFiles();
+  request.onerror = () => console.error("IndexedDB failed storing:", file.name);
+}
+
+// ------------------- In-Memory -------------------
+function storeInMemory(file) {
+  inMemoryFiles[file.name] = file;
+  alert(`${file.name} stored in session memory (will vanish on reload)`);
+}
+
+// ------------------- Load & Display -------------------
+function loadFiles() {
+  const list = document.getElementById('fileList');
+  list.innerHTML = '';
+
+  // localStorage files
+  for (let key in localStorage) {
+    if (!key.startsWith('fb_')) continue;
+    const name = key.slice(3);
+    const div = createFileDiv(name, 'localStorage', localStorage.getItem(key));
+    list.appendChild(div);
+  }
+
+  // IndexedDB files
+  if (!db) return;
+  const tx = db.transaction(storeName, "readonly");
+  const store = tx.objectStore(storeName);
+  store.getAll().onsuccess = (e) => {
+    const files = e.target.result;
+    files.forEach(f => {
+      const div = createFileDiv(f.name, 'indexedDB', f.blob);
+      list.appendChild(div);
+    });
+
+    // In-memory files
+    for (let name in inMemoryFiles) {
+      const div = createFileDiv(name, 'memory', inMemoryFiles[name]);
+      list.appendChild(div);
+    }
+  };
+}
+
+// ------------------- Create File Div -------------------
+function createFileDiv(name, type, content) {
+  const div = document.createElement('div');
+  div.className = 'fileItem';
+  div.textContent = name;
+
+  const downloadBtn = document.createElement('button');
+  downloadBtn.textContent = 'Download';
+  downloadBtn.onclick = () => {
+    if (type === 'localStorage') downloadDataURL(content, name);
+    else if (type === 'indexedDB') downloadBlob(content, name);
+    else if (type === 'memory') downloadBlob(content, name);
+  };
+
+  const linkBtn = document.createElement('button');
+  linkBtn.textContent = 'Copy Link';
+  linkBtn.onclick = () => {
+    if (type === 'localStorage') navigator.clipboard.writeText(content).then(()=>alert('Base64 link copied!'));
+    else if (type === 'indexedDB' || type==='memory') copyBlobAsBase64(content);
+  };
+
+  div.appendChild(downloadBtn);
+  div.appendChild(linkBtn);
+  return div;
+}
+
+// ------------------- Download Helpers -------------------
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function downloadDataURL(dataURL, filename) {
+  const a = document.createElement('a');
+  a.href = dataURL; a.download = filename; a.click();
+}
+
+// ------------------- Convert Blob -> Base64 -------------------
+function copyBlobAsBase64(blob) {
+  const reader = new FileReader();
+  reader.onload = () => navigator.clipboard.writeText(reader.result).then(()=>alert('Base64 link copied!'));
+  reader.readAsDataURL(blob);
+}
+</script>
+
+</body>
+</html>
