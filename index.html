@@ -3,32 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Front Bird | Files? Never leaves your device!</title>
+    <title>Front Bird | Secure Local Vault</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --burgundy: #4a0012;
             --gold: #FFD700;
-            --gold-glow: rgba(255, 215, 0, 0.3);
+            --gold-glow: rgba(255, 215, 0, 0.4);
             --glass: rgba(255, 255, 255, 0.03);
-            --card-bg: rgba(20, 0, 5, 0.6);
+            --card-bg: rgba(20, 0, 5, 0.8);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; outline: none; }
         body {
             font-family: 'Inter', sans-serif;
-            background: radial-gradient(circle at top, #6b001a, #1a0007);
+            background: radial-gradient(circle at top, #6b001a, #0d0004);
             background-attachment: fixed;
             color: #fff;
             min-height: 100vh;
             overflow-x: hidden;
         }
 
-        /* --- YouTube Style Compact Banner --- */
+        /* --- Compact Pro Banner --- */
         .banner {
             width: 100%;
-            height: 180px;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(26, 0, 7, 1)), 
+            height: 160px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.1), #1a0007), 
                         url('https://i.ibb.co/WvdHgn4g/banner.png') no-repeat center/cover;
             display: flex;
             flex-direction: column;
@@ -37,110 +37,106 @@
             border-bottom: 1px solid var(--gold-glow);
         }
         .banner h1 { 
-            font-size: clamp(1.5rem, 5vw, 2.5rem); 
-            letter-spacing: 8px; 
+            font-size: clamp(1.8rem, 6vw, 3rem); 
+            letter-spacing: 10px; 
             color: var(--gold); 
             text-transform: uppercase;
-            text-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+            text-shadow: 0 0 30px var(--gold-glow);
         }
 
         .main-content {
-            width: 95%;
-            max-width: 800px;
-            margin: -30px auto 100px;
-            z-index: 2;
+            width: 92%;
+            max-width: 850px;
+            margin: -25px auto 100px;
         }
 
-        /* --- Enhanced Dropzone --- */
+        /* --- Dropzone Architecture --- */
         #dropZone {
             background: var(--card-bg);
-            backdrop-filter: blur(15px);
-            border: 1px dashed var(--gold);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--gold-glow);
             border-radius: 24px;
-            padding: 40px 20px;
+            padding: 45px 20px;
             text-align: center;
             cursor: pointer;
-            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            transition: 0.5s cubic-bezier(0.2, 1, 0.3, 1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
         }
-        #dropZone:hover { transform: translateY(-5px); border-style: solid; box-shadow: 0 0 25px var(--gold-glow); }
-        .upload-icon { font-size: 40px; color: var(--gold); margin-bottom: 10px; display: block; }
+        #dropZone:hover { border-color: var(--gold); transform: scale(1.02); box-shadow: 0 0 40px var(--gold-glow); }
+        .upload-icon { font-size: 45px; color: var(--gold); margin-bottom: 12px; display: block; filter: drop-shadow(0 0 10px var(--gold)); }
 
-        /* --- File Cards (Material 3 Inspired) --- */
-        .vault-title { margin: 40px 0 15px; font-size: 0.75rem; letter-spacing: 3px; color: var(--gold); opacity: 0.7; text-transform: uppercase; }
+        /* --- Vault Grid --- */
+        .vault-header { display: flex; justify-content: space-between; align-items: center; margin: 40px 10px 15px; }
+        .vault-label { font-size: 0.7rem; letter-spacing: 4px; color: var(--gold); opacity: 0.8; text-transform: uppercase; }
         
-        .file-grid { display: grid; gap: 12px; }
+        .file-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
         .file-card {
             background: var(--glass);
-            border: 1px solid rgba(255, 215, 0, 0.1);
-            border-radius: 16px;
-            padding: 14px 20px;
+            border: 1px solid rgba(255, 215, 0, 0.05);
+            border-radius: 18px;
+            padding: 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
             transition: 0.3s;
-            animation: slideIn 0.5s ease backwards;
+            animation: entry 0.6s ease backwards;
         }
-        .file-card:hover { background: rgba(255, 215, 0, 0.05); border-color: var(--gold); }
-        @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+        .file-card:hover { background: rgba(255, 215, 0, 0.08); border-color: var(--gold); transform: translateY(-3px); }
+        @keyframes entry { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
-        .file-info { display: flex; flex-direction: column; }
-        .file-name { font-weight: 600; font-size: 0.95rem; color: #eee; margin-bottom: 4px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .file-type { font-size: 0.65rem; background: var(--gold); color: var(--burgundy); padding: 2px 8px; border-radius: 20px; font-weight: 800; width: fit-content; }
+        .file-meta { flex-grow: 1; min-width: 0; margin-right: 15px; }
+        .file-name { font-weight: 600; font-size: 0.9rem; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+        .file-badge { font-size: 0.6rem; color: var(--gold); opacity: 0.6; font-weight: 800; text-transform: uppercase; margin-top: 4px; display: block; }
 
-        .btn-group { display: flex; gap: 8px; }
-        .action-btn {
-            background: transparent;
-            border: 1px solid var(--gold);
-            color: var(--gold);
-            padding: 8px 16px;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
+        .actions { display: flex; gap: 8px; }
+        .circle-btn {
+            width: 36px; height: 36px; border-radius: 50%; border: 1px solid var(--gold);
+            display: flex; align-items: center; justify-content: center;
+            background: transparent; color: var(--gold); cursor: pointer; transition: 0.2s;
+            font-size: 14px;
         }
-        .action-btn:hover { background: var(--gold); color: var(--burgundy); box-shadow: 0 0 15px var(--gold-glow); }
-        .btn-delete { border-color: #ff4d4d; color: #ff4d4d; }
-        .btn-delete:hover { background: #ff4d4d; color: #fff; border-color: #ff4d4d; }
+        .circle-btn:hover { background: var(--gold); color: var(--burgundy); box-shadow: 0 0 15px var(--gold); }
+        .btn-del { border-color: #ff4d4d; color: #ff4d4d; }
+        .btn-del:hover { background: #ff4d4d; color: #fff; box-shadow: 0 0 15px rgba(255, 77, 77, 0.4); }
 
-        /* --- Ultra Effort Photo Viewer --- */
+        /* --- Professional Image Viewer & Downloader --- */
         #viewerModal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(10, 0, 2, 0.98);
-            backdrop-filter: blur(25px);
+            backdrop-filter: blur(30px);
             display: none; justify-content: center; align-items: center; z-index: 1000;
-            cursor: zoom-out;
         }
+        #viewerBody { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         #viewerContent {
-            max-width: 90%; max-height: 85%;
+            max-width: 85%; max-height: 70%;
             border-radius: 12px;
-            box-shadow: 0 0 50px rgba(0,0,0,1), 0 0 30px var(--gold-glow);
-            transform: scale(0.9);
-            transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            box-shadow: 0 0 60px rgba(0,0,0,1);
+            transform: scale(0.9); transition: 0.5s cubic-bezier(0.19, 1, 0.22, 1);
         }
         #viewerModal.open #viewerContent { transform: scale(1); }
         
-        .viewer-tools {
-            position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
-            display: flex; gap: 20px; background: rgba(255,255,255,0.1); padding: 10px 25px;
-            border-radius: 30px; border: 1px solid rgba(255,255,255,0.2);
+        .viewer-controls {
+            margin-top: 30px; display: flex; gap: 15px; align-items: center;
+            background: rgba(255, 255, 255, 0.05); padding: 12px 25px; border-radius: 40px;
+            border: 1px solid rgba(255,215,0,0.2);
         }
+        .control-label { font-size: 0.8rem; font-weight: 600; color: var(--gold); margin-right: 10px; }
 
         /* --- Notifications --- */
         #toast {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            position: fixed; top: 20px; right: 20px;
             background: var(--gold); color: var(--burgundy);
-            padding: 12px 24px; border-radius: 50px; font-weight: 700;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            display: none; z-index: 2000;
+            padding: 12px 24px; border-radius: 12px; font-weight: 700;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: none; z-index: 2000; animation: toastIn 0.3s ease;
         }
+        @keyframes toastIn { from { transform: translateX(100%); } to { transform: translateX(0); } }
 
-        footer { text-align: center; padding: 40px; opacity: 0.3; font-size: 0.7rem; letter-spacing: 2px; }
+        footer { text-align: center; padding: 50px; opacity: 0.3; font-size: 0.6rem; letter-spacing: 3px; }
 
         @media (max-width: 600px) {
-            .banner { height: 130px; }
-            .action-btn { padding: 6px 10px; font-size: 0.7rem; }
+            .file-grid { grid-template-columns: 1fr; }
+            .banner { height: 120px; }
         }
     </style>
 </head>
@@ -148,148 +144,174 @@
 
 <div class="banner">
     <h1>Front Bird</h1>
-    <p style="font-size: 0.6rem; letter-spacing: 4px; color: var(--gold);">FILES? NEVER LEAVES YOUR DEVICE!</p>
+    <p style="font-size: 0.6rem; letter-spacing: 5px; color: var(--gold); opacity: 0.6;">ENCRYPTED STORAGE</p>
 </div>
+
 
 <div class="main-content">
     <div id="dropZone">
-        <span class="upload-icon">✦</span>
-        <div style="font-weight: 600; font-size: 1.1rem; margin-bottom: 4px;">Drag & drop, or click to browse</div>
-        <div style="font-size: 0.8rem; opacity: 0.6;">Files are stored in your browser</div>
+        <span class="upload-icon">✧</span>
+        <div style="font-weight: 600; font-size: 1.2rem; color: var(--gold);">Secure Asset Drop</div>
+        <div style="font-size: 0.8rem; opacity: 0.5; margin-top: 5px;">Click or Drag to Vault</div>
     </div>
 
-    <div class="vault-title">Local Files</div>
+    <div class="vault-header">
+        <span class="vault-label">Active Assets</span>
+    </div>
     <div id="fileGrid" class="file-grid"></div>
 </div>
 
-<div id="viewerModal" onclick="closeViewer()">
-    <div id="viewerBody"></div>
-    <div class="viewer-tools" onclick="event.stopPropagation()">
-        <span id="viewerName" style="font-size: 0.8rem; font-weight: 600;"></span>
+<div id="viewerModal">
+    <div id="viewerBody">
+        <div id="closeArea" onclick="closeViewer()" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:-1;"></div>
+        <div id="contentTarget"></div>
+        <div class="viewer-controls">
+            <span class="control-label" id="viewerName">filename.jpg</span>
+            <button class="circle-btn" onclick="triggerDownload()" title="Download Asset">↓</button>
+            <button class="circle-btn" onclick="triggerShare()" title="Generate Link">🔗</button>
+            <button class="circle-btn" onclick="closeViewer()" style="border-color:rgba(255,255,255,0.3); color:white;">✕</button>
+        </div>
     </div>
 </div>
 
-<div id="toast">Link copied!</div>
+<div id="toast">Copied to clipboard!</div>
 
-<footer>&copy; @ 2026 FRONT BIRD, NAS9229ALT • ZERO-SERVER ARCHITECTURE</footer>
+<footer>&copy; @ 2026-2027 Front Bird, Nas9229alt • Files? Never leaves your device!</footer>
 
 <script>
-    const dbName = "FrontBird_V3";
-    const storeName = "assets";
+    const dbName = "FrontBird_Ultra";
+    const storeName = "vault";
     let db;
-    const sessionFiles = {};
+    let currentViewing = { name: '', data: '', type: '' };
 
-    // Initial Load & Hash Handling
     window.onload = () => {
         initDB();
-        checkUrlHash();
+        handleHash();
     };
 
     function initDB() {
         const req = indexedDB.open(dbName, 1);
         req.onupgradeneeded = e => e.target.result.createObjectStore(storeName, { keyPath: "name" });
-        req.onsuccess = e => { db = e.target.result; renderVault(); };
+        req.onsuccess = e => { db = e.target.result; render(); };
     }
 
-    // Check if the link contains a "shared" file
-    function checkUrlHash() {
-        if (window.location.hash.length > 10) {
+    function handleHash() {
+        if (window.location.hash.length > 20) {
             try {
-                const rawData = decodeURIComponent(window.location.hash.substring(1));
-                const [name, dataURL] = rawData.split('||');
-                // Temporary add to session to view
-                sessionFiles[name] = { name, data: dataURL, isShared: true };
-                showToast("Imported Shared File");
-                setTimeout(() => viewFile(name, 'SHARED'), 500);
-            } catch (e) { console.error("Hash import failed"); }
+                const parts = decodeURIComponent(window.location.hash.substring(1)).split('||');
+                currentViewing = { name: parts[0], data: parts[1], type: 'LINK' };
+                setTimeout(() => openViewer(currentViewing.name, currentViewing.data), 800);
+            } catch (e) { console.error("Hash Error"); }
         }
     }
 
     const dropZone = document.getElementById('dropZone');
     dropZone.onclick = () => {
-        const input = document.createElement('input'); input.type = 'file'; input.multiple = true;
-        input.onchange = () => handleUpload(input.files); input.click();
+        const i = document.createElement('input'); i.type = 'file'; i.multiple = true;
+        i.onchange = () => handleFiles(i.files); i.click();
     };
 
-    async function handleUpload(files) {
-        for (let file of files) {
-            if (file.size <= 2 * 1024 * 1024) { // Small: LocalStorage
-                const reader = new FileReader();
-                reader.onload = () => { localStorage.setItem(`fb_${file.name}`, reader.result); renderVault(); };
-                reader.readAsDataURL(file);
-            } else { // Medium/Large: IndexedDB
+    async function handleFiles(files) {
+        for (let f of files) {
+            if (f.size <= 2 * 1024 * 1024) {
+                const r = new FileReader();
+                r.onload = () => { localStorage.setItem(`fb_${f.name}`, r.result); render(); };
+                r.readAsDataURL(f);
+            } else {
                 const tx = db.transaction(storeName, "readwrite");
-                tx.objectStore(storeName).put({ name: file.name, blob: file });
-                tx.oncomplete = () => renderVault();
+                tx.objectStore(storeName).put({ name: f.name, blob: f });
+                tx.oncomplete = () => render();
             }
         }
     }
 
-    async function renderVault() {
+    async function render() {
         const grid = document.getElementById('fileGrid');
         grid.innerHTML = '';
 
-        // Shared from URL
-        for (let n in sessionFiles) grid.appendChild(createCard(n, 'SHARED'));
-
-        // LocalStorage
-        for (let k in localStorage) if (k.startsWith('fb_')) grid.appendChild(createCard(k.slice(3), 'LOCAL'));
-
-        // IndexedDB
+        for (let k in localStorage) if (k.startsWith('fb_')) grid.appendChild(createCard(k.slice(3), 'Local'));
         if (db) {
             db.transaction(storeName).objectStore(storeName).getAll().onsuccess = e => {
-                e.target.result.forEach(f => grid.appendChild(createCard(f.name, 'VAULT')));
+                e.target.result.forEach(f => grid.appendChild(createCard(f.name, 'Secure Vault')));
             };
         }
     }
 
     function createCard(name, type) {
-        const div = document.createElement('div');
-        div.className = 'file-card';
-        div.innerHTML = `
-            <div class="file-info">
+        const d = document.createElement('div');
+        d.className = 'file-card';
+        d.innerHTML = `
+            <div class="file-meta">
                 <span class="file-name">${name}</span>
-                <span class="file-type">${type}</span>
+                <span class="file-badge">${type}</span>
             </div>
-            <div class="btn-group">
-                <button class="action-btn" onclick="viewFile('${name}', '${type}')">VIEW</button>
-                <button class="action-btn" onclick="shareFile('${name}', '${type}')">SHARE</button>
-                <button class="action-btn btn-delete" onclick="deleteFile('${name}', '${type}')">×</button>
+            <div class="actions">
+                <button class="circle-btn" onclick="prepareView('${name}', '${type}')">◎</button>
+                <button class="circle-btn btn-del" onclick="del('${name}', '${type}')">×</button>
             </div>
         `;
-        return div;
+        return d;
     }
 
-    async function getData(name, type) {
-        if (type === 'LOCAL') return localStorage.getItem(`fb_${name}`);
-        if (type === 'SHARED') return sessionFiles[name].data;
-        return new Promise(res => {
-            db.transaction(storeName).objectStore(storeName).get(name).onsuccess = e => {
-                const reader = new FileReader();
-                reader.onload = () => res(reader.result);
-                reader.readAsDataURL(e.target.result.blob);
-            };
-        });
+    async function prepareView(name, type) {
+        let data;
+        if (type === 'Local') data = localStorage.getItem(`fb_${name}`);
+        else {
+            data = await new Promise(res => {
+                db.transaction(storeName).objectStore(storeName).get(name).onsuccess = e => {
+                    const r = new FileReader();
+                    r.onload = () => res(r.result);
+                    r.readAsDataURL(e.target.result.blob);
+                };
+            });
+        }
+        currentViewing = { name, data, type };
+        openViewer(name, data);
     }
 
-    // --- High Effort Viewing ---
-    async function viewFile(name, type) {
-        const data = await getData(name, type);
+    function openViewer(name, data) {
         const modal = document.getElementById('viewerModal');
-        const body = document.getElementById('viewerBody');
+        const target = document.getElementById('contentTarget');
         document.getElementById('viewerName').innerText = name;
+        target.innerHTML = '';
 
-        body.innerHTML = '';
         if (name.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i)) {
             const img = document.createElement('img');
             img.src = data; img.id = 'viewerContent';
-            body.appendChild(img);
+            target.appendChild(img);
             modal.style.display = 'flex';
             setTimeout(() => modal.classList.add('open'), 10);
         } else {
-            // Non-image download fallback
-            const a = document.createElement('a'); a.href = data; a.download = name; a.click();
+            triggerDownload(); // Auto-download for non-images
         }
+    }
+
+    // --- PRO DOWNLOAD ENGINE ---
+    function triggerDownload() {
+        const { name, data } = currentViewing;
+        if (!data) return;
+
+        const a = document.createElement('a');
+        a.href = data;
+        a.download = name;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        
+        notify("Download started!");
+    }
+
+        notify("Welcome to Front Bird! Made by RazNas (A.K.A Nas9229alt or Haxster998).")
+        
+    async function triggerShare() {
+        const { name, data } = currentViewing;
+        if (data.length > 1500000) {
+            alert("File is too large for URL sharing (Browser limit).");
+            return;
+        }
+        const url = `${window.location.origin}${window.location.pathname}#${encodeURIComponent(name + '||' + data)}`;
+        navigator.clipboard.writeText(url);
+        notify("Secure link generated!");
     }
 
     function closeViewer() {
@@ -298,38 +320,19 @@
         setTimeout(() => modal.style.display = 'none', 400);
     }
 
-    // --- Share Link Logic ---
-    async function shareFile(name, type) {
-        const data = await getData(name, type);
-        // Note: Chrome/Browsers have a URL limit (approx 2MB for fragments). 
-        // This works for images/small files.
-        if (data.length > 1500000) {
-            alert("File too large for a direct URL link. Try a smaller image.");
-            return;
-        }
-
-        const shareUrl = `${window.location.origin}${window.location.pathname}#${encodeURIComponent(name + '||' + data)}`;
-        
-        navigator.clipboard.writeText(shareUrl).then(() => {
-            showToast("Shareable Link Copied!");
-        });
-    }
-
-    function deleteFile(name, type) {
-        if (type === 'LOCAL') localStorage.removeItem(`fb_${name}`);
-        else if (type === 'SHARED') delete sessionFiles[name];
+    function del(name, type) {
+        if (type === 'Local') localStorage.removeItem(`fb_${name}`);
         else db.transaction(storeName, "readwrite").objectStore(storeName).delete(name);
-        renderVault();
+        render();
     }
 
-    function showToast(msg) {
+    function notify(msg) {
         const t = document.getElementById('toast');
         t.innerText = msg;
         t.style.display = 'block';
-        setTimeout(() => t.style.display = 'none', 3000);
+        setTimeout(() => t.style.display = 'none', 2500);
     }
 </script>
 
 </body>
-    </html>
-    
+</html>
