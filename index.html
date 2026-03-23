@@ -3,293 +3,333 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Front Bird | Vault</title>
-    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>Front Bird | Files? Never leaves your device!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
             --burgundy: #4a0012;
-            --accent: #FFD700;
-            --surface: #2b000b;
-            --glass: rgba(255, 255, 255, 0.05);
-            --outline: rgba(255, 215, 0, 0.2);
+            --gold: #FFD700;
+            --gold-glow: rgba(255, 215, 0, 0.3);
+            --glass: rgba(255, 255, 255, 0.03);
+            --card-bg: rgba(20, 0, 5, 0.6);
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            font-family: 'Google Sans', sans-serif;
-            background: radial-gradient(circle at center, #5a0016, #1a0007);
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top, #6b001a, #1a0007);
             background-attachment: fixed;
-            color: white;
+            color: #fff;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            overflow-x: hidden;
         }
 
-        /* --- YouTube-Style Compact Banner --- */
-        .hero-banner {
+        /* --- YouTube Style Compact Banner --- */
+        .banner {
             width: 100%;
-            height: 220px; /* PC height */
-            background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.7)), 
+            height: 180px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.2), rgba(26, 0, 7, 1)), 
                         url('https://i.ibb.co/WvdHgn4g/banner.png') no-repeat center/cover;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            border-bottom: 2px solid var(--accent);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border-bottom: 1px solid var(--gold-glow);
         }
-
-        @media (max-width: 600px) {
-            .hero-banner { height: 140px; } /* Mobile height */
-            .hero-banner h1 { font-size: 1.8rem !important; }
-        }
-
-        .hero-banner h1 {
-            font-size: 2.8rem;
-            letter-spacing: 5px;
-            color: var(--accent);
+        .banner h1 { 
+            font-size: clamp(1.5rem, 5vw, 2.5rem); 
+            letter-spacing: 8px; 
+            color: var(--gold); 
             text-transform: uppercase;
-            text-shadow: 0 0 20px rgba(0,0,0,0.8);
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
         }
 
-        .hero-banner p {
-            font-size: 0.75rem;
-            letter-spacing: 3px;
-            opacity: 0.8;
-            margin-top: 5px;
-            background: rgba(0,0,0,0.3);
-            padding: 2px 10px;
-            border-radius: 4px;
-        }
-
-        /* --- Main App Container --- */
-        .app-container {
+        .main-content {
             width: 95%;
-            max-width: 750px;
-            padding: 25px 0 100px;
+            max-width: 800px;
+            margin: -30px auto 100px;
+            z-index: 2;
         }
 
-        /* --- Compact DropZone --- */
+        /* --- Enhanced Dropzone --- */
         #dropZone {
-            background: var(--glass);
-            backdrop-filter: blur(10px);
-            border: 1px dashed var(--accent);
-            border-radius: 20px;
-            padding: 30px;
+            background: var(--card-bg);
+            backdrop-filter: blur(15px);
+            border: 1px dashed var(--gold);
+            border-radius: 24px;
+            padding: 40px 20px;
             text-align: center;
             cursor: pointer;
-            transition: 0.3s;
-            margin-bottom: 30px;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
         }
+        #dropZone:hover { transform: translateY(-5px); border-style: solid; box-shadow: 0 0 25px var(--gold-glow); }
+        .upload-icon { font-size: 40px; color: var(--gold); margin-bottom: 10px; display: block; }
 
-        #dropZone:hover {
-            background: rgba(255, 215, 0, 0.05);
-            transform: translateY(-2px);
-        }
-
-        .upload-icon { font-size: 32px; color: var(--accent); margin-bottom: 8px; }
-
-        /* --- Smart File List --- */
-        .vault-label {
-            font-size: 0.7rem;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            color: var(--accent);
-            opacity: 0.6;
-            margin-bottom: 15px;
-            display: block;
-        }
-
+        /* --- File Cards (Material 3 Inspired) --- */
+        .vault-title { margin: 40px 0 15px; font-size: 0.75rem; letter-spacing: 3px; color: var(--gold); opacity: 0.7; text-transform: uppercase; }
+        
+        .file-grid { display: grid; gap: 12px; }
         .file-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--outline);
-            border-radius: 12px;
-            padding: 12px 16px;
+            background: var(--glass);
+            border: 1px solid rgba(255, 215, 0, 0.1);
+            border-radius: 16px;
+            padding: 14px 20px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 10px;
-            animation: slideUp 0.4s ease forwards;
+            transition: 0.3s;
+            animation: slideIn 0.5s ease backwards;
         }
+        .file-card:hover { background: rgba(255, 215, 0, 0.05); border-color: var(--gold); }
+        @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
 
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .file-info { display: flex; flex-direction: column; }
+        .file-name { font-weight: 600; font-size: 0.95rem; color: #eee; margin-bottom: 4px; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .file-type { font-size: 0.65rem; background: var(--gold); color: var(--burgundy); padding: 2px 8px; border-radius: 20px; font-weight: 800; width: fit-content; }
 
-        .file-info { display: flex; flex-direction: column; gap: 4px; }
-        .file-name { font-weight: 500; font-size: 0.95rem; max-width: 250px; overflow: hidden; text-overflow: ellipsis; }
-        .file-tag {
-            font-size: 0.6rem;
-            background: var(--accent);
-            color: var(--burgundy);
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-weight: 800;
-            width: fit-content;
-        }
-
-        .actions { display: flex; gap: 6px; }
-
-        .btn {
+        .btn-group { display: flex; gap: 8px; }
+        .action-btn {
             background: transparent;
-            border: 1px solid var(--accent);
-            color: var(--accent);
-            padding: 6px 12px;
-            border-radius: 6px;
+            border: 1px solid var(--gold);
+            color: var(--gold);
+            padding: 8px 16px;
+            border-radius: 12px;
             font-size: 0.75rem;
-            cursor: pointer;
             font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
         }
+        .action-btn:hover { background: var(--gold); color: var(--burgundy); box-shadow: 0 0 15px var(--gold-glow); }
+        .btn-delete { border-color: #ff4d4d; color: #ff4d4d; }
+        .btn-delete:hover { background: #ff4d4d; color: #fff; border-color: #ff4d4d; }
 
-        .btn:hover { background: var(--accent); color: var(--burgundy); }
-        .btn-del { border-color: #ff5555; color: #ff5555; }
-        .btn-del:hover { background: #ff5555; color: white; }
-
-        /* --- Modal --- */
-        #modal {
+        /* --- Ultra Effort Photo Viewer --- */
+        #viewerModal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9); backdrop-filter: blur(20px);
-            display: none; justify-content: center; align-items: center; z-index: 100;
+            background: rgba(10, 0, 2, 0.98);
+            backdrop-filter: blur(25px);
+            display: none; justify-content: center; align-items: center; z-index: 1000;
+            cursor: zoom-out;
+        }
+        #viewerContent {
+            max-width: 90%; max-height: 85%;
+            border-radius: 12px;
+            box-shadow: 0 0 50px rgba(0,0,0,1), 0 0 30px var(--gold-glow);
+            transform: scale(0.9);
+            transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        #viewerModal.open #viewerContent { transform: scale(1); }
+        
+        .viewer-tools {
+            position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 20px; background: rgba(255,255,255,0.1); padding: 10px 25px;
+            border-radius: 30px; border: 1px solid rgba(255,255,255,0.2);
         }
 
-        #modal img { max-width: 90%; max-height: 80%; border-radius: 10px; border: 2px solid var(--accent); }
+        /* --- Notifications --- */
+        #toast {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: var(--gold); color: var(--burgundy);
+            padding: 12px 24px; border-radius: 50px; font-weight: 700;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            display: none; z-index: 2000;
+        }
 
-        footer { margin-top: auto; padding: 20px; font-size: 0.65rem; opacity: 0.4; text-align: center; }
+        footer { text-align: center; padding: 40px; opacity: 0.3; font-size: 0.7rem; letter-spacing: 2px; }
+
+        @media (max-width: 600px) {
+            .banner { height: 130px; }
+            .action-btn { padding: 6px 10px; font-size: 0.7rem; }
+        }
     </style>
 </head>
 <body>
 
-<div class="hero-banner">
+<div class="banner">
     <h1>Front Bird</h1>
-    <p>SECURE • LOCAL • PRIVATE</p>
+    <p style="font-size: 0.6rem; letter-spacing: 4px; color: var(--gold);">FILES? NEVER LEAVES YOUR DEVICE!</p>
 </div>
 
-<div class="app-container">
+<div class="main-content">
     <div id="dropZone">
-        <div class="upload-icon">✦</div>
-        <div style="font-weight: 500;">Secure Deposit</div>
-        <div style="font-size: 0.8rem; opacity: 0.6;">Drop files or click to browse</div>
+        <span class="upload-icon">✦</span>
+        <div style="font-weight: 600; font-size: 1.1rem; margin-bottom: 4px;">Drag & drop, or click to browse</div>
+        <div style="font-size: 0.8rem; opacity: 0.6;">Files are stored in your browser</div>
     </div>
 
-    <span class="vault-label">Vault Assets</span>
-    <div id="fileList"></div>
+    <div class="vault-title">Local Files</div>
+    <div id="fileGrid" class="file-grid"></div>
 </div>
 
-<div id="modal" onclick="this.style.display='none'">
-    <div id="modalBody"></div>
+<div id="viewerModal" onclick="closeViewer()">
+    <div id="viewerBody"></div>
+    <div class="viewer-tools" onclick="event.stopPropagation()">
+        <span id="viewerName" style="font-size: 0.8rem; font-weight: 600;"></span>
+    </div>
 </div>
 
-<footer>&copy; 2026 FRONT BIRD VAULT</footer>
+<div id="toast">Link copied!</div>
+
+<footer>&copy; @ 2026 FRONT BIRD, NAS9229ALT • ZERO-SERVER ARCHITECTURE</footer>
 
 <script>
-    const dbName = "FB_Storage";
-    const storeName = "vault";
+    const dbName = "FrontBird_V3";
+    const storeName = "assets";
     let db;
-    const inMemory = {};
+    const sessionFiles = {};
 
-    // IDB Init
-    const request = indexedDB.open(dbName, 1);
-    request.onupgradeneeded = e => e.target.result.createObjectStore(storeName, { keyPath: "name" });
-    request.onsuccess = e => { db = e.target.result; render(); };
-
-    // Dropzone
-    const dropZone = document.getElementById('dropZone');
-    dropZone.onclick = () => {
-        const i = document.createElement('input'); i.type = 'file'; i.multiple = true;
-        i.onchange = () => handle(i.files); i.click();
+    // Initial Load & Hash Handling
+    window.onload = () => {
+        initDB();
+        checkUrlHash();
     };
 
-    function handle(files) {
-        for (let f of files) {
-            if (f.size <= 5*1024*1024) {
-                const r = new FileReader();
-                r.onload = () => { localStorage.setItem(`fb_${f.name}`, r.result); render(); };
-                r.readAsDataURL(f);
-            } else if (f.size <= 50*1024*1024) {
-                db.transaction(storeName, "readwrite").objectStore(storeName).put({ name: f.name, blob: f });
-                render();
-            } else {
-                inMemory[f.name] = f;
-                render();
+    function initDB() {
+        const req = indexedDB.open(dbName, 1);
+        req.onupgradeneeded = e => e.target.result.createObjectStore(storeName, { keyPath: "name" });
+        req.onsuccess = e => { db = e.target.result; renderVault(); };
+    }
+
+    // Check if the link contains a "shared" file
+    function checkUrlHash() {
+        if (window.location.hash.length > 10) {
+            try {
+                const rawData = decodeURIComponent(window.location.hash.substring(1));
+                const [name, dataURL] = rawData.split('||');
+                // Temporary add to session to view
+                sessionFiles[name] = { name, data: dataURL, isShared: true };
+                showToast("Imported Shared File");
+                setTimeout(() => viewFile(name, 'SHARED'), 500);
+            } catch (e) { console.error("Hash import failed"); }
+        }
+    }
+
+    const dropZone = document.getElementById('dropZone');
+    dropZone.onclick = () => {
+        const input = document.createElement('input'); input.type = 'file'; input.multiple = true;
+        input.onchange = () => handleUpload(input.files); input.click();
+    };
+
+    async function handleUpload(files) {
+        for (let file of files) {
+            if (file.size <= 2 * 1024 * 1024) { // Small: LocalStorage
+                const reader = new FileReader();
+                reader.onload = () => { localStorage.setItem(`fb_${file.name}`, reader.result); renderVault(); };
+                reader.readAsDataURL(file);
+            } else { // Medium/Large: IndexedDB
+                const tx = db.transaction(storeName, "readwrite");
+                tx.objectStore(storeName).put({ name: file.name, blob: file });
+                tx.oncomplete = () => renderVault();
             }
         }
     }
 
-    async function getSource(name, type) {
+    async function renderVault() {
+        const grid = document.getElementById('fileGrid');
+        grid.innerHTML = '';
+
+        // Shared from URL
+        for (let n in sessionFiles) grid.appendChild(createCard(n, 'SHARED'));
+
+        // LocalStorage
+        for (let k in localStorage) if (k.startsWith('fb_')) grid.appendChild(createCard(k.slice(3), 'LOCAL'));
+
+        // IndexedDB
+        if (db) {
+            db.transaction(storeName).objectStore(storeName).getAll().onsuccess = e => {
+                e.target.result.forEach(f => grid.appendChild(createCard(f.name, 'VAULT')));
+            };
+        }
+    }
+
+    function createCard(name, type) {
+        const div = document.createElement('div');
+        div.className = 'file-card';
+        div.innerHTML = `
+            <div class="file-info">
+                <span class="file-name">${name}</span>
+                <span class="file-type">${type}</span>
+            </div>
+            <div class="btn-group">
+                <button class="action-btn" onclick="viewFile('${name}', '${type}')">VIEW</button>
+                <button class="action-btn" onclick="shareFile('${name}', '${type}')">SHARE</button>
+                <button class="action-btn btn-delete" onclick="deleteFile('${name}', '${type}')">×</button>
+            </div>
+        `;
+        return div;
+    }
+
+    async function getData(name, type) {
         if (type === 'LOCAL') return localStorage.getItem(`fb_${name}`);
-        if (type === 'RAM') return URL.createObjectURL(inMemory[name]);
+        if (type === 'SHARED') return sessionFiles[name].data;
         return new Promise(res => {
             db.transaction(storeName).objectStore(storeName).get(name).onsuccess = e => {
-                res(URL.createObjectURL(e.target.result.blob));
+                const reader = new FileReader();
+                reader.onload = () => res(reader.result);
+                reader.readAsDataURL(e.target.result.blob);
             };
         });
     }
 
-    async function render() {
-        const list = document.getElementById('fileList');
-        list.innerHTML = '';
-        
-        // Local
-        for (let k in localStorage) if (k.startsWith('fb_')) list.appendChild(createItem(k.slice(3), 'LOCAL'));
-        
-        // IDB & RAM
-        if (db) {
-            db.transaction(storeName).objectStore(storeName).getAll().onsuccess = (e) => {
-                e.target.result.forEach(f => list.appendChild(createItem(f.name, 'VAULT')));
-                for (let n in inMemory) list.appendChild(createItem(n, 'RAM'));
-            };
-        }
-    }
+    // --- High Effort Viewing ---
+    async function viewFile(name, type) {
+        const data = await getData(name, type);
+        const modal = document.getElementById('viewerModal');
+        const body = document.getElementById('viewerBody');
+        document.getElementById('viewerName').innerText = name;
 
-    function createItem(name, type) {
-        const d = document.createElement('div');
-        d.className = 'file-card';
-        d.innerHTML = `
-            <div class="file-info">
-                <span class="file-name">${name}</span>
-                <span class="file-tag">${type}</span>
-            </div>
-            <div class="actions">
-                <button class="btn" onclick="view('${name}', '${type}')">View</button>
-                <button class="btn" onclick="share('${name}', '${type}')">Share</button>
-                <button class="btn btn-del" onclick="del('${name}', '${type}')">×</button>
-            </div>
-        `;
-        return d;
-    }
-
-    async function view(name, type) {
-        const src = await getSource(name, type);
-        const modal = document.getElementById('modal');
-        const body = document.getElementById('modalBody');
         body.innerHTML = '';
-
-        if (name.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
-            const img = document.createElement('img'); img.src = src;
+        if (name.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i)) {
+            const img = document.createElement('img');
+            img.src = data; img.id = 'viewerContent';
             body.appendChild(img);
             modal.style.display = 'flex';
+            setTimeout(() => modal.classList.add('open'), 10);
         } else {
-            const a = document.createElement('a'); a.href = src; a.download = name; a.click();
+            // Non-image download fallback
+            const a = document.createElement('a'); a.href = data; a.download = name; a.click();
         }
     }
 
-    async function share(name, type) {
-        const src = await getSource(name, type);
-        if (navigator.share) {
-            navigator.share({ title: 'Front Bird', text: name, url: window.location.href });
-        } else {
-            navigator.clipboard.writeText(src);
-            alert("Share Link (Internal) copied!");
-        }
+    function closeViewer() {
+        const modal = document.getElementById('viewerModal');
+        modal.classList.remove('open');
+        setTimeout(() => modal.style.display = 'none', 400);
     }
 
-    function del(name, type) {
+    // --- Share Link Logic ---
+    async function shareFile(name, type) {
+        const data = await getData(name, type);
+        // Note: Chrome/Browsers have a URL limit (approx 2MB for fragments). 
+        // This works for images/small files.
+        if (data.length > 1500000) {
+            alert("File too large for a direct URL link. Try a smaller image.");
+            return;
+        }
+
+        const shareUrl = `${window.location.origin}${window.location.pathname}#${encodeURIComponent(name + '||' + data)}`;
+        
+        navigator.clipboard.writeText(shareUrl).then(() => {
+            showToast("Shareable Link Copied!");
+        });
+    }
+
+    function deleteFile(name, type) {
         if (type === 'LOCAL') localStorage.removeItem(`fb_${name}`);
-        else if (type === 'RAM') delete inMemory[name];
+        else if (type === 'SHARED') delete sessionFiles[name];
         else db.transaction(storeName, "readwrite").objectStore(storeName).delete(name);
-        render();
+        renderVault();
+    }
+
+    function showToast(msg) {
+        const t = document.getElementById('toast');
+        t.innerText = msg;
+        t.style.display = 'block';
+        setTimeout(() => t.style.display = 'none', 3000);
     }
 </script>
 
 </body>
-</html>
+    </html>
+    
