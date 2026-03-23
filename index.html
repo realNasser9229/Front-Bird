@@ -1,203 +1,314 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Files? Never leaves your device! | Front Bird</title>
-<style>
-  body {
-    margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background-color: #800020; /* burgundy */
-    color: #FFD700; /* yellow */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
-  }
-  header {
-    width: 100%;
-    background: #800020 url('https://i.ibb.co/WvdHgn4g/banner.png') no-repeat center/cover;
-    height: 180px;
-  }
-  #dropZone {
-    width: 90%;
-    max-width: 500px;
-    height: 180px;
-    border: 3px dashed #FFD700;
-    border-radius: 15px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 30px 0;
-    text-align: center;
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: background 0.3s;
-    padding: 20px;
-  }
-  #dropZone.hover { background-color: rgba(255, 215, 0, 0.2); }
-  #fileList { width: 90%; max-width: 500px; }
-  .fileItem {
-    display: flex; justify-content: space-between; align-items: center;
-    background: rgba(255, 215, 0, 0.1); padding: 10px; margin-bottom: 8px; border-radius: 8px;
-  }
-  .fileItem button {
-    background: #FFD700; border: none; color: #800020; padding: 5px 10px; border-radius: 5px; cursor: pointer;
-  }
-  .fileItem button:hover { background: #fff176; }
-  footer { margin-top: auto; padding: 20px; font-size: 0.9rem; color: #ffd700aa; text-align: center; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Front Bird | Private File Vault</title>
+    <style>
+        :root {
+            --burgundy: #4a0012;
+            --accent: #FFD700;
+            --accent-soft: rgba(255, 215, 0, 0.15);
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 215, 0, 0.2);
+        }
+
+        * { box-sizing: border-box; transition: all 0.2s ease; }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: radial-gradient(circle at top, #6b001a 0%, #2b000b 100%);
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        header {
+            width: 100%;
+            height: 220px;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.4), transparent), 
+                        url('https://i.ibb.co/WvdHgn4g/banner.png') no-repeat center/cover;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        header h1 {
+            font-size: 2.2rem;
+            margin: 0;
+            letter-spacing: 2px;
+            color: var(--accent);
+            text-shadow: 0 4px 10px rgba(0,0,0,0.5);
+        }
+
+        header p { color: rgba(255,215,0,0.7); font-weight: 300; margin-top: 5px; }
+
+        .container {
+            width: 90%;
+            max-width: 700px;
+            padding: 40px 0;
+        }
+
+        #dropZone {
+            width: 100%;
+            height: 160px;
+            border: 2px dashed var(--glass-border);
+            border-radius: 20px;
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            margin-bottom: 40px;
+            border: 1px dashed var(--accent);
+        }
+
+        #dropZone:hover {
+            background: var(--accent-soft);
+            transform: translateY(-2px);
+            border-style: solid;
+        }
+
+        #dropZone svg { fill: var(--accent); margin-bottom: 10px; }
+
+        .section-title {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent);
+            margin-bottom: 15px;
+            opacity: 0.8;
+        }
+
+        .fileItem {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            animation: fadeIn 0.4s ease forwards;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .file-info { display: flex; flex-direction: column; }
+        .file-name { font-weight: 500; margin-bottom: 4px; max-width: 300px; overflow: hidden; text-overflow: ellipsis; }
+        
+        .storage-badge {
+            font-size: 0.65rem;
+            padding: 2px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+            font-weight: bold;
+            width: fit-content;
+        }
+        .badge-local { background: #4caf50; color: white; }
+        .badge-db { background: #2196f3; color: white; }
+        .badge-session { background: #ff9800; color: white; }
+
+        .actions { display: flex; gap: 8px; }
+
+        button {
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        button:hover { background: var(--accent); color: var(--burgundy); }
+        button.secondary { border-color: rgba(255,255,255,0.3); color: white; }
+        button.secondary:hover { background: white; color: black; border-color: white; }
+
+        footer {
+            margin-top: auto;
+            padding: 30px;
+            font-size: 0.8rem;
+            color: rgba(255, 215, 0, 0.4);
+            text-align: center;
+            border-top: 1px solid var(--glass-border);
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
 
-<header></header>
+<header>
+    <h1>FRONT BIRD</h1>
+    <p>Secure. Local. Multi-Tiered.</p>
+</header>
 
-<div id="dropZone">Drag & drop your files here or click to select</div>
+<div class="container">
+    <div id="dropZone">
+        <svg width="40" height="40" viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
+        <span>Drop files or <span style="color:var(--accent); text-decoration: underline;">browse</span></span>
+    </div>
 
-<div id="fileList"></div>
+    <div class="section-title">Your Private Storage</div>
+    <div id="fileList">
+        </div>
+</div>
 
-<footer>Front Bird &copy; 2026 — Multi-tier browser file manager</footer>
+<footer>Front Bird &copy; 2026 — Zero-Knowledge Browser Storage</footer>
 
 <script>
-// ------------------- Multi-tier storage -------------------
-const dbName = "FrontBirdDB";
-const storeName = "files";
-let db;
-const inMemoryFiles = {}; // session-only files
+    const dbName = "FrontBirdDB";
+    const storeName = "files";
+    let db;
+    const inMemoryFiles = {};
 
-// IndexedDB init
-const request = indexedDB.open(dbName, 1);
-request.onupgradeneeded = (e) => {
-  db = e.target.result;
-  db.createObjectStore(storeName, { keyPath: "name" });
-};
-request.onsuccess = (e) => {
-  db = e.target.result;
-  loadFiles();
-};
-request.onerror = (e) => console.error("DB error:", e.target.errorCode);
+    // DB Init
+    const request = indexedDB.open(dbName, 1);
+    request.onupgradeneeded = (e) => { e.target.result.createObjectStore(storeName, { keyPath: "name" }); };
+    request.onsuccess = (e) => { db = e.target.result; loadFiles(); };
 
-// ------------------- Drag & Drop -------------------
-const dropZone = document.getElementById('dropZone');
-dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('hover'); });
-dropZone.addEventListener('dragleave', () => dropZone.classList.remove('hover'));
-dropZone.addEventListener('drop', e => { e.preventDefault(); dropZone.classList.remove('hover'); handleFiles(e.dataTransfer.files); });
-dropZone.addEventListener('click', () => {
-  const input = document.createElement('input');
-  input.type = 'file'; input.multiple = true;
-  input.onchange = () => handleFiles(input.files);
-  input.click();
-});
+    // Interaction
+    const dropZone = document.getElementById('dropZone');
+    dropZone.onclick = () => {
+        const input = document.createElement('input');
+        input.type = 'file'; input.multiple = true;
+        input.onchange = () => handleFiles(input.files);
+        input.click();
+    };
+    dropZone.ondragover = e => { e.preventDefault(); dropZone.style.background = "var(--accent-soft)"; };
+    dropZone.ondragleave = () => { dropZone.style.background = "var(--glass)"; };
+    dropZone.ondrop = e => { 
+        e.preventDefault(); 
+        dropZone.style.background = "var(--glass)";
+        handleFiles(e.dataTransfer.files); 
+    };
 
-// ------------------- File Handling -------------------
-function handleFiles(files) {
-  for (let file of files) {
-    if (file.size <= 5*1024*1024) storeLocalStorage(file); // <5MB
-    else if (file.size <= 50*1024*1024) storeIndexedDB(file); // 5-50MB
-    else storeInMemory(file); // >50MB session
-  }
-  loadFiles();
-}
-
-// ------------------- LocalStorage -------------------
-function storeLocalStorage(file) {
-  const reader = new FileReader();
-  reader.onload = () => {
-    try { localStorage.setItem(`fb_${file.name}`, reader.result); }
-    catch(e) { alert("LocalStorage full or file too big!"); }
-    loadFiles();
-  };
-  reader.readAsDataURL(file);
-}
-
-// ------------------- IndexedDB -------------------
-function storeIndexedDB(file) {
-  const tx = db.transaction(storeName, "readwrite");
-  const store = tx.objectStore(storeName);
-  const request = store.put({ name: file.name, blob: file });
-  request.onsuccess = () => loadFiles();
-  request.onerror = () => console.error("IndexedDB failed storing:", file.name);
-}
-
-// ------------------- In-Memory -------------------
-function storeInMemory(file) {
-  inMemoryFiles[file.name] = file;
-  alert(`${file.name} stored in session memory (vanishes on reload)`);
-}
-
-// ------------------- Load & Display -------------------
-function loadFiles() {
-  const list = document.getElementById('fileList');
-  list.innerHTML = '';
-
-  // localStorage files
-  for (let key in localStorage) {
-    if (!key.startsWith('fb_')) continue;
-    const name = key.slice(3);
-    const div = createFileDiv(name, 'localStorage', localStorage.getItem(key));
-    list.appendChild(div);
-  }
-
-  // IndexedDB files
-  if (!db) return;
-  const tx = db.transaction(storeName, "readonly");
-  const store = tx.objectStore(storeName);
-  store.getAll().onsuccess = (e) => {
-    const files = e.target.result;
-    files.forEach(f => list.appendChild(createFileDiv(f.name, 'indexedDB', f.blob)));
-
-    // In-memory files
-    for (let name in inMemoryFiles) {
-      list.appendChild(createFileDiv(name, 'memory', inMemoryFiles[name]));
+    function handleFiles(files) {
+        for (let file of files) {
+            if (file.size <= 5*1024*1024) storeLocalStorage(file);
+            else if (file.size <= 50*1024*1024) storeIndexedDB(file);
+            else storeInMemory(file);
+        }
     }
-  };
-}
 
-// ------------------- Create File Div -------------------
-function createFileDiv(name, type, content) {
-  const div = document.createElement('div');
-  div.className = 'fileItem';
-  div.textContent = name;
+    function storeLocalStorage(file) {
+        const reader = new FileReader();
+        reader.onload = () => {
+            try { localStorage.setItem(`fb_${file.name}`, reader.result); loadFiles(); }
+            catch(e) { console.error("LS Full"); }
+        };
+        reader.readAsDataURL(file);
+    }
 
-  const downloadBtn = document.createElement('button');
-  downloadBtn.textContent = 'Download';
-  downloadBtn.onclick = () => {
-    if (type === 'localStorage') downloadDataURL(content, name);
-    else downloadBlob(content, name);
-  };
+    function storeIndexedDB(file) {
+        const tx = db.transaction(storeName, "readwrite");
+        tx.objectStore(storeName).put({ name: file.name, blob: file });
+        tx.oncomplete = () => loadFiles();
+    }
 
-  const linkBtn = document.createElement('button');
-  linkBtn.textContent = 'Copy Link';
-  linkBtn.onclick = () => {
-    if (type === 'localStorage') navigator.clipboard.writeText(content).then(()=>alert('Base64 link copied!'));
-    else copyBlobAsBase64(content);
-  };
+    function storeInMemory(file) {
+        inMemoryFiles[file.name] = file;
+        loadFiles();
+    }
 
-  div.appendChild(downloadBtn);
-  div.appendChild(linkBtn);
-  return div;
-}
+    function loadFiles() {
+        const list = document.getElementById('fileList');
+        list.innerHTML = '';
 
-// ------------------- Download Helpers -------------------
-function downloadBlob(blob, filename) {
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = filename; a.click();
-  URL.revokeObjectURL(url);
-}
+        // LocalStorage
+        for (let key in localStorage) {
+            if (key.startsWith('fb_')) {
+                list.appendChild(createFileDiv(key.slice(3), 'Local', localStorage.getItem(key)));
+            }
+        }
 
-function downloadDataURL(dataURL, filename) {
-  const a = document.createElement('a');
-  a.href = dataURL; a.download = filename; a.click();
-}
+        // IndexedDB
+        if (db) {
+            db.transaction(storeName, "readonly").objectStore(storeName).getAll().onsuccess = (e) => {
+                e.target.result.forEach(f => list.appendChild(createFileDiv(f.name, 'Database', f.blob)));
+                // In-Memory
+                for (let name in inMemoryFiles) {
+                    list.appendChild(createFileDiv(name, 'Session', inMemoryFiles[name]));
+                }
+            };
+        }
+    }
 
-// ------------------- Convert Blob -> Base64 -------------------
-function copyBlobAsBase64(blob) {
-  const reader = new FileReader();
-  reader.onload = () => navigator.clipboard.writeText(reader.result).then(()=>alert('Base64 link copied!'));
-  reader.readAsDataURL(blob);
-}
+    function createFileDiv(name, type, content) {
+        const div = document.createElement('div');
+        div.className = 'fileItem';
+        
+        const badgeClass = type === 'Local' ? 'badge-local' : (type === 'Database' ? 'badge-db' : 'badge-session');
+        
+        div.innerHTML = `
+            <div class="file-info">
+                <span class="file-name">${name}</span>
+                <span class="storage-badge ${badgeClass}">${type}</span>
+            </div>
+            <div class="actions">
+                <button class="secondary" onclick="copyLink(this, '${type}', '${name}')">Copy Link</button>
+                <button onclick="downloadFile('${type}', '${name}')">Download</button>
+            </div>
+        `;
+        return div;
+    }
+
+    function downloadFile(type, name) {
+        if (type === 'Local') {
+            const a = document.createElement('a');
+            a.href = localStorage.getItem(`fb_${name}`);
+            a.download = name; a.click();
+        } else if (type === 'Database') {
+            db.transaction(storeName).objectStore(storeName).get(name).onsuccess = (e) => {
+                triggerDownload(e.target.result.blob, name);
+            };
+        } else {
+            triggerDownload(inMemoryFiles[name], name);
+        }
+    }
+
+    function triggerDownload(blob, name) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = name; a.click();
+        URL.revokeObjectURL(url);
+    }
+
+    async function copyLink(btn, type, name) {
+        let content = "";
+        if (type === 'Local') content = localStorage.getItem(`fb_${name}`);
+        else {
+            const blob = type === 'Database' ? 
+                (await new Promise(res => {
+                    db.transaction(storeName).objectStore(storeName).get(name).onsuccess = e => res(e.target.result.blob);
+                })) : inMemoryFiles[name];
+            
+            content = await new Promise(res => {
+                const r = new FileReader();
+                r.onload = () => res(r.result);
+                r.readAsDataURL(blob);
+            });
+        }
+        
+        navigator.clipboard.writeText(content);
+        const originalText = btn.innerText;
+        btn.innerText = "Copied!";
+        btn.style.borderColor = "#4caf50";
+        setTimeout(() => { 
+            btn.innerText = originalText; 
+            btn.style.borderColor = "";
+        }, 2000);
+    }
 </script>
 
 </body>
